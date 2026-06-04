@@ -10,7 +10,13 @@ if ($temperature === null || $rssi === null) {
     die("Paramètres manquants");
 }
 
-$pdo->query("INSERT INTO meteo (temperature, rssi) VALUES ($temperature, $rssi)");
+if ($temperature > 50 || $temperature < -30 || $temperature == 4.04) {
+    http_response_code(400);
+    die("Valeurs incohérentes");
+}
+
+$stmt = $pdo->prepare("INSERT INTO meteo (temperature, rssi) VALUES (:temperature, :rssi)");
+$stmt->execute([':temperature' => $temperature, ':rssi' => $rssi]);
 
 echo "Valeurs enregistrées";
 ?>
